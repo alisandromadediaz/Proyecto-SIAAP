@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIAAP — Sistema Inteligente de Apoyo al Aprendizaje Personalizado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EEF1F6;
+    --paper-raised:#FFFFFF;
+    --ink:#16233A;
+    --ink-soft:#4A5A75;
+    --brand:#2B4C7E;
+    --brand-dark:#1B335A;
+    --green:#2F8F5B;
+    --green-soft:#E4F3EA;
+    --amber:#E8A33D;
+    --amber-soft:#FBEBD1;
+    --red:#C0392B;
+    --red-soft:#F8E2DE;
+    --line:#D6DCE6;
+    --radius:14px;
+    --shadow:0 10px 30px -12px rgba(22,35,58,0.18);
+    --maxw:1160px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:'Fraunces',serif;
+    color:var(--ink);
+    margin:0 0 .4em 0;
+    letter-spacing:-0.01em;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.78rem;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--brand);
+    font-weight:500;
+  }
+  a{color:inherit;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px;}
+  img,svg{max-width:100%;display:block;}
+  button{font-family:'Inter',sans-serif;}
+
+  /* Reveal on scroll */
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease, transform .7s ease;}
+  .reveal.is-visible{opacity:1;transform:translateY(0);}
+  @media (prefers-reduced-motion: reduce){
+    .reveal{opacity:1;transform:none;transition:none;}
+    html{scroll-behavior:auto;}
+  }
+
+  /* NAV */
+  header.nav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(238,241,246,0.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{
+    max-width:var(--maxw);margin:0 auto;padding:16px 28px;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .logo{display:flex;align-items:center;gap:10px;font-family:'Fraunces',serif;font-weight:600;font-size:1.15rem;}
+  .logo-mark{
+    width:30px;height:30px;border-radius:8px;
+    background:linear-gradient(135deg,var(--brand),var(--green));
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-family:'IBM Plex Mono',monospace;font-size:.7rem;font-weight:500;
+  }
+  nav.links{display:flex;gap:28px;font-size:.93rem;font-weight:500;}
+  nav.links a{text-decoration:none;color:var(--ink-soft);border-bottom:2px solid transparent;padding-bottom:3px;transition:color .2s,border-color .2s;}
+  nav.links a:hover{color:var(--brand);border-color:var(--brand);}
+  .nav-cta{
+    background:var(--ink);color:#fff;border:none;padding:9px 18px;border-radius:999px;
+    font-size:.88rem;font-weight:600;cursor:pointer;
+  }
+  .nav-toggle{display:none;}
+
+  /* HERO */
+  .hero{padding:76px 0 60px;}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;}
+  .hero h1{font-size:clamp(2.1rem,4vw,3.15rem);line-height:1.08;}
+  .hero h1 em{font-style:italic;color:var(--brand);font-weight:500;}
+  .hero p.lede{font-size:1.12rem;color:var(--ink-soft);max-width:46ch;margin:18px 0 30px;}
+  .hero-ctas{display:flex;gap:14px;flex-wrap:wrap;}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:13px 24px;border-radius:999px;font-weight:600;font-size:.96rem;
+    text-decoration:none;border:1px solid transparent;cursor:pointer;transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn:hover{transform:translateY(-2px);}
+  .btn-primary{background:var(--brand);color:#fff;box-shadow:0 8px 20px -8px rgba(43,76,126,.55);}
+  .btn-ghost{background:transparent;color:var(--ink);border-color:var(--line);}
+  .btn-ghost:hover{border-color:var(--brand);color:var(--brand);}
+
+  .hero-visual{position:relative;background:var(--paper-raised);border-radius:20px;box-shadow:var(--shadow);padding:26px 22px 18px;border:1px solid var(--line);}
+  .hero-visual .cardline{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+  .hero-visual .cardline .eyebrow{margin:0;}
+  .hero-visual .cardline .tag{font-family:'IBM Plex Mono',monospace;font-size:.72rem;background:var(--green-soft);color:var(--green);padding:3px 9px;border-radius:999px;font-weight:500;}
+
+  /* STATS STRIP */
+  .stats-strip{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--paper-raised);}
+  .stats-strip .wrap{display:grid;grid-template-columns:repeat(4,1fr);padding:30px 28px;}
+  .stat{text-align:center;padding:0 10px;border-right:1px solid var(--line);}
+  .stat:last-child{border-right:none;}
+  .stat .num{font-family:'Fraunces',serif;font-weight:600;font-size:1.9rem;color:var(--brand-dark);}
+  .stat .label{font-size:.82rem;color:var(--ink-soft);margin-top:4px;}
+
+  section{padding:88px 0;}
+  .section-head{max-width:640px;margin:0 auto 48px;text-align:center;}
+  .section-head.left{margin:0 0 44px;text-align:left;}
+  .section-head h2{font-size:clamp(1.7rem,3vw,2.3rem);}
+  .section-head p{color:var(--ink-soft);font-size:1.03rem;margin-top:10px;}
+
+  /* PROBLEMA */
+  .problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  .p-card{background:var(--paper-raised);border:1px solid var(--line);border-radius:var(--radius);padding:26px;}
+  .p-card .icon{width:42px;height:42px;border-radius:11px;background:var(--red-soft);color:var(--red);display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:1.2rem;}
+  .p-card h3{font-size:1.08rem;font-family:'Inter',sans-serif;font-weight:600;}
+  .p-card p{color:var(--ink-soft);font-size:.94rem;margin:6px 0 0;}
+
+  /* SOLUCIÓN / FEATURES */
+  .features{background:var(--brand-dark);color:#EDF1F8;}
+  .features .eyebrow{color:#9FC0F0;}
+  .features .section-head p{color:#B9C7DE;}
+  .features h2{color:#fff;}
+  .feat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+  .f-card{
+    background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:var(--radius);
+    padding:24px 20px;transition:background .2s ease, transform .2s ease;
+  }
+  .f-card:hover{background:rgba(255,255,255,0.11);transform:translateY(-4px);}
+  .f-card .icon{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:1.05rem;}
+  .f-card h3{color:#fff;font-family:'Inter',sans-serif;font-size:1.02rem;font-weight:600;margin-bottom:6px;}
+  .f-card p{color:#C6D2E6;font-size:.9rem;margin:0;}
+
+  /* METODOLOGÍA - pipeline */
+  .pipeline{position:relative;}
+  .pipeline-track{
+    display:grid;grid-template-columns:repeat(6,1fr);gap:14px;position:relative;
+  }
+  .pipeline-track::before{
+    content:"";position:absolute;top:23px;left:5%;right:5%;height:2px;
+    background:repeating-linear-gradient(90deg,var(--line) 0 8px, transparent 8px 14px);
+    z-index:0;
+  }
+  .step{position:relative;z-index:1;text-align:left;}
+  .step .n{
+    width:46px;height:46px;border-radius:50%;background:var(--paper-raised);border:2px solid var(--brand);
+    color:var(--brand-dark);font-family:'IBM Plex Mono',monospace;font-weight:500;
+    display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:.95rem;
+  }
+  .step.done .n{background:var(--brand);color:#fff;}
+  .step h3{font-family:'Inter',sans-serif;font-size:.97rem;font-weight:600;margin-bottom:5px;}
+  .step p{font-size:.85rem;color:var(--ink-soft);margin:0;}
+
+  /* MODELO / REPORT CARD */
+  .model-section{background:var(--paper-raised);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .model-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;}
+  .report-card{
+    background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:26px 26px 10px;
+  }
+  .report-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px dashed var(--line);}
+  .report-row:last-child{border-bottom:none;}
+  .report-row .rlabel{font-size:.9rem;color:var(--ink-soft);}
+  .report-row .rvalue{font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:1rem;color:var(--brand-dark);}
+  .badge-ok{background:var(--green-soft);color:var(--green);font-family:'IBM Plex Mono',monospace;font-size:.72rem;padding:3px 9px;border-radius:999px;margin-left:8px;}
+  .var-list{list-style:none;padding:0;margin:18px 0 0;display:flex;flex-wrap:wrap;gap:8px;}
+  .var-list li{
+    font-family:'IBM Plex Mono',monospace;font-size:.78rem;background:var(--amber-soft);color:#8A5C13;
+    padding:5px 11px;border-radius:8px;
+  }
+
+  /* AUDIENCIAS */
+  .audience-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  .a-card{border:1px solid var(--line);border-radius:var(--radius);padding:28px;background:var(--paper-raised);position:relative;overflow:hidden;}
+  .a-card .tag{
+    font-family:'IBM Plex Mono',monospace;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;
+    color:var(--brand);margin-bottom:10px;display:block;
+  }
+  .a-card h3{font-family:'Inter',sans-serif;font-size:1.15rem;font-weight:700;margin-bottom:12px;}
+  .a-card ul{padding-left:18px;margin:0;color:var(--ink-soft);font-size:.92rem;}
+  .a-card li{margin-bottom:7px;}
+  .a-card.highlight{border-color:var(--green);box-shadow:0 12px 26px -14px rgba(47,143,91,.4);}
+
+  /* CTA FINAL */
+  .cta-final{
+    background:linear-gradient(135deg,var(--brand-dark),var(--brand));
+    color:#fff;border-radius:24px;padding:56px 48px;
+    display:flex;align-items:center;justify-content:space-between;gap:36px;flex-wrap:wrap;
+    margin:0 28px;
+  }
+  .cta-final h2{color:#fff;font-size:clamp(1.5rem,3vw,2.1rem);max-width:22ch;}
+  .cta-final p{color:#CFE0F5;margin-top:8px;max-width:40ch;}
+  .btn-white{background:#fff;color:var(--brand-dark);}
+
+  footer{padding:50px 0 34px;}
+  .footer-grid{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:24px;padding-top:34px;margin-top:34px;border-top:1px solid var(--line);}
+  .footer-note{font-size:.85rem;color:var(--ink-soft);max-width:52ch;}
+  .footer-meta{font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--ink-soft);text-align:right;}
+
+  @media (max-width:980px){
+    .hero-grid{grid-template-columns:1fr;}
+    .problem-grid,.feat-grid,.audience-grid{grid-template-columns:repeat(2,1fr);}
+    .pipeline-track{grid-template-columns:repeat(3,1fr);row-gap:34px;}
+    .pipeline-track::before{display:none;}
+    .model-grid{grid-template-columns:1fr;}
+    .stats-strip .wrap{grid-template-columns:repeat(2,1fr);row-gap:20px;}
+    .stat{border-right:none;border-bottom:1px solid var(--line);padding-bottom:16px;}
+    nav.links{display:none;}
+  }
+  @media (max-width:620px){
+    .problem-grid,.feat-grid,.audience-grid{grid-template-columns:1fr;}
+    .pipeline-track{grid-template-columns:1fr;}
+    .cta-final{flex-direction:column;align-items:flex-start;padding:40px 26px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="logo"><span class="logo-mark">AI</span> SIAAP</div>
+    <nav class="links">
+      <a href="#problema">Problema</a>
+      <a href="#solucion">Cómo funciona</a>
+      <a href="#metodologia">Metodología</a>
+      <a href="#modelo">El modelo</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+    <button class="nav-cta" onclick="document.getElementById('contacto').scrollIntoView()">Ver el proyecto</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="eyebrow">Proyecto de Inteligencia Artificial · Aprendizaje supervisado</p>
+      <h1>Detectar a tiempo,<br><em>acompañar</em> a tiempo.</h1>
+      <p class="lede">SIAAP es un sistema inteligente que observa el comportamiento de estudio de cada
+      estudiante y predice su rendimiento académico antes de que llegue la primera nota —
+      para recomendar el apoyo correcto en el momento correcto.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="#metodologia">Ver metodología CRISP-ML</a>
+        <a class="btn btn-ghost" href="#modelo">Resultados del modelo</a>
+      </div>
+    </div>
+
+    <div class="hero-visual reveal">
+      <div class="cardline">
+        <p class="eyebrow">Progreso proyectado del estudiante</p>
+        <span class="tag">predicción IA</span>
+      </div>
+      <svg id="hero-chart" viewBox="0 0 460 260" xmlns="http://www.w3.org/2000/svg">
+        <!-- grid -->
+        <g stroke="#E1E6EF" stroke-width="1">
+          <line x1="30" y1="30" x2="30" y2="220"></line>
+          <line x1="30" y1="220" x2="440" y2="220"></line>
+          <line x1="30" y1="170" x2="440" y2="170" stroke-dasharray="2 6"></line>
+          <line x1="30" y1="120" x2="440" y2="120" stroke-dasharray="2 6"></line>
+          <line x1="30" y1="70" x2="440" y2="70" stroke-dasharray="2 6"></line>
+        </g>
+        <!-- highlighter swipe behind the line -->
+        <rect x="230" y="55" width="180" height="34" fill="#FBEBD1" opacity="0.9" transform="rotate(-4 230 70)"></rect>
+        <!-- baseline (sin intervención) -->
+        <path d="M30,190 C110,188 190,182 260,178 C330,174 380,172 430,170"
+              fill="none" stroke="#C7CEDA" stroke-width="2.5" stroke-dasharray="5 6"/>
+        <!-- línea con SIAAP -->
+        <path id="growth-line" d="M30,192 C90,182 130,150 190,128 C250,106 300,96 350,68 C380,52 405,46 430,40"
+              fill="none" stroke="#2F8F5B" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="30" cy="192" r="5" fill="#2F8F5B"/>
+        <circle cx="430" cy="40" r="6" fill="#2F8F5B" stroke="#fff" stroke-width="2"/>
+        <!-- annotation -->
+        <text x="270" y="50" font-family="IBM Plex Mono, monospace" font-size="13" fill="#8A5C13" font-weight="500">+31% mejora estimada</text>
+        <text x="34" y="238" font-family="Inter, sans-serif" font-size="11" fill="#7A879E">Semana 1</text>
+        <text x="392" y="238" font-family="Inter, sans-serif" font-size="11" fill="#7A879E">Semana 12</text>
+        <text x="30" y="205" font-family="Inter, sans-serif" font-size="10" fill="#A9B2C2">— sin apoyo</text>
+        <text x="30" y="60" font-family="Inter, sans-serif" font-size="10" fill="#2F8F5B">— con SIAAP</text>
+      </svg>
+      <div style="display:flex;gap:10px;padding:14px 4px 6px;">
+        <span class="badge-ok">Bajo → Medio detectado</span>
+        <span class="badge-ok" style="background:var(--amber-soft);color:#8A5C13;">Plan de apoyo activado</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="stats-strip">
+  <div class="wrap">
+    <div class="stat"><div class="num">0.84</div><div class="label">F1-score macro del modelo</div></div>
+    <div class="stat"><div class="num">3</div><div class="label">Niveles de rendimiento predichos</div></div>
+    <div class="stat"><div class="num">8</div><div class="label">Variables de comportamiento observadas</div></div>
+    <div class="stat"><div class="num">87%</div><div class="label">Recall en estudiantes de riesgo (Bajo)</div></div>
+  </div>
+</div>
+
+<section id="problema">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="eyebrow">El problema</p>
+      <h2>Cuando se detecta el riesgo, casi siempre es tarde</h2>
+      <p>Las instituciones suelen enterarse de que un estudiante está en riesgo hasta la primera
+      evaluación parcial — cuando ya queda poco margen para revertir la situación en el periodo.</p>
+    </div>
+    <div class="problem-grid">
+      <div class="p-card reveal">
+        <div class="icon">⏱</div>
+        <h3>Detección tardía</h3>
+        <p>Las alertas académicas llegan después del primer corte, cuando el estudiante ya acumuló
+        atrasos difíciles de recuperar.</p>
+      </div>
+      <div class="p-card reveal">
+        <div class="icon">🎯</div>
+        <h3>Apoyo genérico</h3>
+        <p>Los planes de refuerzo suelen ser iguales para todos, sin considerar la causa real detrás
+        del bajo desempeño de cada estudiante.</p>
+      </div>
+      <div class="p-card reveal">
+        <div class="icon">📉</div>
+        <h3>Docentes sin visibilidad</h3>
+        <p>Con grupos numerosos, es difícil para un docente notar a tiempo pequeños cambios de
+        comportamiento que anticipan una caída en el rendimiento.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="solucion">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="eyebrow">La solución</p>
+      <h2>Un modelo de IA que aprende del comportamiento, no solo de las notas</h2>
+      <p>SIAAP combina datos de asistencia, hábitos de estudio, participación y uso de la plataforma
+      para anticipar el rendimiento y recomendar una acción concreta.</p>
+    </div>
+    <div class="feat-grid">
+      <div class="f-card reveal">
+        <div class="icon">🔍</div>
+        <h3>Detección temprana</h3>
+        <p>Identifica señales de riesgo semanas antes de la primera calificación oficial.</p>
+      </div>
+      <div class="f-card reveal">
+        <div class="icon">🧩</div>
+        <h3>Recomendación personalizada</h3>
+        <p>Traduce cada predicción en un plan de apoyo específico: tutoría, refuerzo o reto avanzado.</p>
+      </div>
+      <div class="f-card reveal">
+        <div class="icon">📋</div>
+        <h3>Panel para el docente</h3>
+        <p>Muestra qué estudiantes requieren atención prioritaria y por qué, con variables explicables.</p>
+      </div>
+      <div class="f-card reveal">
+        <div class="icon">🔁</div>
+        <h3>Aprendizaje continuo</h3>
+        <p>El modelo se reentrena periódicamente con datos reales para mantenerse preciso y justo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="metodologia">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="eyebrow">Metodología</p>
+      <h2>Desarrollado con CRISP-ML(Q)</h2>
+      <p>El modelo se construyó siguiendo las seis fases estándar para proyectos de Machine Learning
+      con aseguramiento de calidad — desde el entendimiento del problema hasta el monitoreo en producción.</p>
+    </div>
+    <div class="pipeline">
+      <div class="pipeline-track">
+        <div class="step done reveal"><div class="n">01</div><h3>Negocio &amp; datos</h3><p>Definición del problema, objetivos y variables disponibles.</p></div>
+        <div class="step done reveal"><div class="n">02</div><h3>Preparación</h3><p>Limpieza, codificación y escalado de los datos de estudiantes.</p></div>
+        <div class="step done reveal"><div class="n">03</div><h3>Modelado</h3><p>Entrenamiento de Regresión Logística, Árbol de Decisión y Random Forest.</p></div>
+        <div class="step done reveal"><div class="n">04</div><h3>Evaluación</h3><p>Métricas, matriz de confusión y validación cruzada.</p></div>
+        <div class="step done reveal"><div class="n">05</div><h3>Despliegue</h3><p>Serialización del modelo y motor de recomendaciones.</p></div>
+        <div class="step reveal"><div class="n">06</div><h3>Monitoreo</h3><p>Seguimiento continuo, detección de drift y reentrenamiento.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="model-section" id="modelo">
+  <div class="wrap model-grid">
+    <div class="reveal">
+      <p class="eyebrow">El modelo, en números</p>
+      <h2>Un modelo supervisado, evaluado con rigor</h2>
+      <p style="color:var(--ink-soft);margin-top:10px;">
+      Se compararon tres algoritmos de clasificación multiclase; el mejor se seleccionó por
+      F1-score macro, priorizando no dejar sin detectar a estudiantes en la clase <strong>Bajo</strong>.
+      </p>
+      <ul class="var-list">
+        <li>horas_estudio_semanal</li>
+        <li>asistencia_pct</li>
+        <li>promedio_anterior</li>
+        <li>participacion_clase</li>
+        <li>uso_plataforma_horas</li>
+        <li>entregas_a_tiempo_pct</li>
+        <li>horas_sueno</li>
+        <li>apoyo_familiar</li>
+      </ul>
+    </div>
+    <div class="report-card reveal">
+      <div class="report-row"><span class="rlabel">Modelo seleccionado</span><span class="rvalue">Regresión Logística</span></div>
+      <div class="report-row"><span class="rlabel">F1-score macro (test)</span><span class="rvalue">0.84 <span class="badge-ok">cumple objetivo</span></span></div>
+      <div class="report-row"><span class="rlabel">Recall clase "Bajo"</span><span class="rvalue">0.87</span></div>
+      <div class="report-row"><span class="rlabel">F1-macro (validación cruzada, 5-fold)</span><span class="rvalue">0.83 ± 0.02</span></div>
+      <div class="report-row"><span class="rlabel">Clases predichas</span><span class="rvalue">Bajo · Medio · Alto</span></div>
+      <div class="report-row"><span class="rlabel">Tamaño del dataset</span><span class="rvalue">1,200 estudiantes</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="audiences">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="eyebrow">Beneficios</p>
+      <h2>Valor para cada persona en el proceso educativo</h2>
+    </div>
+    <div class="audience-grid">
+      <div class="a-card reveal">
+        <span class="tag">Estudiante</span>
+        <h3>Recomendaciones a su medida</h3>
+        <ul>
+          <li>Recibe un plan de estudio ajustado a su situación real, no genérico.</li>
+          <li>Visualiza su propio progreso semana a semana.</li>
+          <li>Detecta a tiempo qué hábito está afectando su desempeño.</li>
+        </ul>
+      </div>
+      <div class="a-card highlight reveal">
+        <span class="tag">Docente</span>
+        <h3>Alertas explicables, no una caja negra</h3>
+        <ul>
+          <li>Ve qué variables explican cada predicción del modelo.</li>
+          <li>Prioriza su tiempo de tutoría en quienes más lo necesitan.</li>
+          <li>Puede corregir al sistema, retroalimentando su aprendizaje.</li>
+        </ul>
+      </div>
+      <div class="a-card reveal">
+        <span class="tag">Institución</span>
+        <h3>Menos reprobación, más evidencia</h3>
+        <ul>
+          <li>Reduce la tasa de reprobación mediante intervención temprana.</li>
+          <li>Cuenta con métricas objetivas para tomar decisiones académicas.</li>
+          <li>Escala el acompañamiento sin escalar el costo por estudiante.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contacto">
+  <div class="cta-final reveal">
+    <div>
+      <h2>Explora el cuaderno técnico completo</h2>
+      <p>Todo el desarrollo del modelo — desde los datos hasta el despliegue — está documentado paso a
+      paso siguiendo CRISP-ML(Q) en el notebook del proyecto.</p>
+    </div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;">
+      <a class="btn btn-white" href="proyecto_crisp_ml_rendimiento_academico.ipynb">Abrir notebook (.ipynb)</a>
+      <a class="btn btn-ghost" style="border-color:rgba(255,255,255,.5);color:#fff;" href="#problema">Volver arriba</a>
+    </div>
+  </div>
+
+  <div class="wrap footer-grid">
+    <p class="footer-note">SIAAP — Sistema Inteligente de Apoyo al Aprendizaje Personalizado.
+    Proyecto académico de Machine Learning supervisado desarrollado con metodología CRISP-ML(Q).
+    Los datos utilizados son sintéticos y se generaron con fines demostrativos.</p>
+    <p class="footer-meta">Aprendizaje supervisado · Clasificación multiclase<br>Julio 2026</p>
+  </div>
+</section>
+
+<script>
+  // Reveal on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Draw-in animation for the hero growth line
+  const growthLine = document.getElementById('growth-line');
+  if (growthLine && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const length = growthLine.getTotalLength();
+    growthLine.style.strokeDasharray = length;
+    growthLine.style.strokeDashoffset = length;
+    growthLine.getBoundingClientRect(); // force reflow
+    growthLine.style.transition = 'stroke-dashoffset 1.8s ease-out';
+    requestAnimationFrame(() => { growthLine.style.strokeDashoffset = '0'; });
+  }
+</script>
+
+</body>
+</html>
